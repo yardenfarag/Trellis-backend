@@ -1,6 +1,9 @@
 const boardService = require('./board.service.js')
 const logger = require('../../services/logger.service')
 const socketService = require('../../services/socket.service')
+const utilService = require('../../services/util.service')
+const asyncLocalStorage = require('../../services/als.service')
+
 
 async function getBoards(req, res) {
   try {
@@ -25,11 +28,11 @@ async function getBoardById(req, res) {
 }
 
 async function addBoard(req, res) {
-  const {loggedinUser} = req
+  const { loggedinUser } = req
 
   try {
     const board = req.body
-    board.createdBy= loggedinUser
+    board.createdBy = loggedinUser
     const addedBoard = await boardService.add(board)
     res.json(addedBoard)
   } catch (err) {
@@ -40,9 +43,24 @@ async function addBoard(req, res) {
 
 
 async function updateBoard(req, res) {
+  const store = asyncLocalStorage.getStore()
+  const { loggedinUser } = store
   try {
-    const board = req.body
+    const { board, activityTxt, task } = req.body
+    let activity = null
+    if (activityTxt) {
+      const miniTask = task ? { id: task.id || null, title: task.title } : null
+      activity = {
+        id: utilService.makeId(),
+        txt: activityTxt,
+        createdAt: Date.now(),
+        byMember: loggedinUser,
+        task: miniTask,
+      }
+    }
+    if (activity) board.activities.unshift(activity)
     const updatedBoard = await boardService.update(board)
+    socketService.broadcast({type: 'change-board', data: updatedBoard, userId:loggedinUser._id})
     res.json(updatedBoard)
   } catch (err) {
     logger.error('Failed to update board', err)
@@ -61,7 +79,6 @@ async function removeBoard(req, res) {
     res.status(500).send({ err: 'Failed to remove board' })
   }
 }
-
 
 
 module.exports = {

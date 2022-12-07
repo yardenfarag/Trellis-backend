@@ -6,6 +6,7 @@ function requireAuth(req, res, next) {
 
   if (config.isGuestMode && !req?.cookies?.loginToken) {
     req.loggedinUser = {_id: '', fullname: 'Guest'}
+
     return next()
   }
 

@@ -1,7 +1,7 @@
 const logger = require('./logger.service')
 
 var gIo = null
-
+ 
 function setupSocketAPI(http) {
     gIo = require('socket.io')(http, {
         cors: {
@@ -13,38 +13,27 @@ function setupSocketAPI(http) {
         socket.on('disconnect', socket => {
             logger.info(`Socket disconnected [id: ${socket.id}]`)
         })
-        socket.on('board room', (boardId) => {
-            if (socket.myRoom === boardId) return
-            if (socket.myRoom) {
-                socket.leave(socket.myRoom)
+        socket.on('board-set', (boardId) => {
+            if (socket.myBoard === boardId) return
+            if (socket.myBoard) {
+                socket.leave(socket.myBoard)
             }
             socket.join(boardId)
-            socket.myRoom = boardId
-            logger.info('borad room is', boardId)
+            socket.myBoard = boardId
+            logger.info('board id is', boardId)
         })
-        socket.on('setMemberJoin', (memberId) => {
-            socket.memberId = memberId
-
-            if (!Object.keys(membersInBoards).includes(socket.myRoom)) {
-                membersInBoards[socket.myRoom] = []
-            }
-            if (!membersInBoards[socket.myRoom].includes(memberId)) {
-                membersInBoards[socket.myRoom].push(memberId)
-            }
-
-            gIo.in(socket.myRoom).emit('updateMembersCount', membersInBoards[socket.myRoom])
+        socket.on('set-user-socket', userId => {
+            logger.info(`Setting socket.userId = ${userId} for socket [id: ${socket.id}]`)
+            socket.userId = userId
         })
-
-        socket.on('setMemberLeave', (memberId) => {
-            socket.memberId = null
-            const boardId = socket.myRoom
-            socket.leave(socket.myRoom)
-            socket.myRoom = null
-            const idx = membersInBoards[boardId].findIndex((mId) => mId === memberId)
-            membersInBoards[boardId].splice(idx, 1)
-
-            gIo.in(boardId).emit('updateMembersCount', membersInBoards[boardId])
+        socket.on('unset-user-socket', () => {
+            logger.info(`Removing socket.userId for socket [id: ${socket.id}]`)
+            delete socket.userId
         })
+        socket.on('change-board', board => {
+            socket.data = board
+        })
+        
     })
 }
 

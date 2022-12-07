@@ -42,8 +42,22 @@ async function logout(req, res){
     }
 }
 
+// async function getLoggedinUser(req, res) {
+//     try {
+//         const loginToken = req.cookies['loginToken']
+//         const loggedinUser = authService.validateToken(loginToken)
+//         if(loggedinUser) res.send(loggedinUser)
+//         else res.send({ fullname: 'Guest', imgUrl: 'https://api-private.atlassian.com/users/b7723e87cdacea8bf9bf6b36952f6a06/avatar' })
+
+//     }
+//     catch (err) {
+//         res.status(500).send({ err: 'Failed to get logged in user' })
+//     }
+// }
+
 module.exports = {
     login,
     signup,
-    logout
+    logout,
+    // getLoggedinUser
 }

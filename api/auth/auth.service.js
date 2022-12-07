@@ -39,7 +39,7 @@ async function signup({username, password, fullname, imgUrl}) {
 
 
 function getLoginToken(user) {
-    const userInfo = {_id : user._id, fullname: user.fullname, isAdmin: user.isAdmin}
+    const userInfo = {_id : user._id, fullname: user.fullname, imgUrl: user.imgUrl}
     return cryptr.encrypt(JSON.stringify(userInfo))    
 }
 
@@ -48,9 +48,9 @@ function validateToken(loginToken) {
         const json = cryptr.decrypt(loginToken)
         const loggedinUser = JSON.parse(json)
         return loggedinUser
-
     } catch(err) {
-        console.log('Invalid login token')
+        // console.log('Invalid login token')
+        return {_id: 'u103', fullname: 'Guest', imgUrl: 'https://api-private.atlassian.com/users/b7723e87cdacea8bf9bf6b36952f6a06/avatar' }
     }
     return null
 }
