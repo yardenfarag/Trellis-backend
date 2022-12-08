@@ -31,7 +31,9 @@ function setupSocketAPI(http) {
             delete socket.userId
         })
         socket.on('change-board', board => {
-            socket.data = board
+            // socket.data = board
+            // console.log('boardId', board._id);
+            // socket.broadcast.emit('change-board', board)
         })
         
     })
