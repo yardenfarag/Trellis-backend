@@ -11,11 +11,13 @@
     "author": "Me",
     "license": "ISC",
     "dependencies": {
+        "-": "^0.0.1",
         "bcryptjs": "^2.4.3",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
         "cryptr": "^6.0.3",
         "express": "^4.17.1",
+        "f": "^1.4.0",
         "mongodb": "^3.2.7",
         "socket.io": "^4.2.0"
     },
